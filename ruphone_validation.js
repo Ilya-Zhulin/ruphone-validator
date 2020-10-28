@@ -1,6 +1,5 @@
 /*
- * File ruphone_validation.js is programmed
- * specially for Skolbridge by
+ * File ruphone_validation.js is programmed by
  * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2020
  */
 
@@ -12,10 +11,12 @@ jQuery(document).ready(function () {
         return ar
     }
     var a, b;
-    document.querySelector("input[type='tel']").onselect = function () {
-        a = document.querySelector("input[type='tel']").selectionStart;
-        b = document.querySelector("input[type='tel']").selectionEnd;
-    };
+    if (document.querySelector("input[type='tel']")) {
+        document.querySelector("input[type='tel']").onselect = function () {
+            a = document.querySelector("input[type='tel']").selectionStart;
+            b = document.querySelector("input[type='tel']").selectionEnd;
+        };
+    }
     jQuery("input[type='tel']").on('input', function (e, q) {
         $this = jQuery(this);
         allows = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
