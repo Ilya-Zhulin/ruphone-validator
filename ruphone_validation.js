@@ -17,7 +17,7 @@ jQuery(document).ready(function () {
             b = document.querySelector("input[type='tel']").selectionEnd;
         };
     }
-    jQuery("input[type='tel']").on('input', function (e, q) {
+    jQuery("input[type='tel'], input[data-type='tel']").on('input', function (e, q) {
         $this = jQuery(this);
         allows = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'];
         key = e.originalEvent['data'];
@@ -85,6 +85,6 @@ jQuery(document).ready(function () {
                 $new_caret = ($caret == 3) ? 5 : (($caret == 8) ? '10' : (($caret == 13) ? 14 : (($caret == '16') ? 17 : $caret)));
             }
         }
-        $(this)[0].setSelectionRange($new_caret, $new_caret);
+        jQuery(this)[0].setSelectionRange($new_caret, $new_caret);
     });
 });
