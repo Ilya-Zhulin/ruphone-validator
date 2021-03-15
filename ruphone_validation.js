@@ -11,10 +11,10 @@ jQuery(document).ready(function () {
         return ar
     }
     var a, b;
-    if (document.querySelector("input[type='tel']")) {
-        document.querySelector("input[type='tel']").onselect = function () {
-            a = document.querySelector("input[type='tel']").selectionStart;
-            b = document.querySelector("input[type='tel']").selectionEnd;
+    if (document.querySelector("input[type='tel'], input[data-type='tel']")) {
+        document.querySelector("input[type='tel'], input[data-type='tel']").onselect = function () {
+            a = document.querySelector("input[type='tel'], input[data-type='tel']").selectionStart;
+            b = document.querySelector("input[type='tel'], input[data-type='tel']").selectionEnd;
         };
     }
     jQuery("input[type='tel'], input[data-type='tel']").on('input', function (e, q) {
