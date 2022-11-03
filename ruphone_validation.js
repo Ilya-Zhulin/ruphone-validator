@@ -1,90 +1,110 @@
-/*
+/**
  * File ruphone_validation.js is programmed by
- * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2020
+ * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2022
+ *
+ * @version         2.0
+ * @url				https://github.com/Ilya-Zhulin/ruphone-validator
+ * @editor			Ilya A.Zhulin - https://www.zhulinia.ru
+ * @copyright		Copyright (C) 2020 - 2022 Ilya A.Zhulin. All Rights Reserved.
+ *
  */
 
 document.addEventListener("DOMContentLoaded", () => {
-    function addSybmol(ar, i, s) {
-        if (ar.length > i && ar[i] != s) {
-            ar.splice(i, 0, s);
-        }
-        return ar
-    }
     document.querySelectorAll("input[type='tel'], input[data-type='tel']").forEach(item => {
         item.addEventListener('input', function (e) {
-            let allows = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'],
-                    key = e.data,
-                    $caret = e.target.selectionStart,
-                    $val = item.value,
-                    rep = '', val = '', ar = [], tmp, $new_val, $new_caret,
-                    a = item.selectionStart,
-                    b = item.selectionEnd;
-            ;
-            if (a && b) {
-                if (b - a > 0) {
-                    rep = new Array(b - a).join('_');
-                }
-                else {
-                    rep = '';
-                }
-            }
+            let allows = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '+', '*', '!'],
+                    force = (item.getAttribute('data-rutel') === 'force') ? 1 : 0,
+                    caret = e.target.selectionStart,
+                    new_caret = 0,
+                    new_caret_moving = 0,
+                    val = item.value,
+                    arr = [],
+                    k = 0,
+                    length,
+                    pattern1 = ['_', '_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'],
+                    pattern2 = ['_', '_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'],
+                    pattern3 = ['_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'],
+                    pattern4 = ['_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'],
+                    pattern = [];
+//            console.log('=============================');
+//            console.log('Курсор исходный: ' + caret);
+            new_caret = caret;
             /* удаление и замена на подчеркивание */
-            if (e.inputType == 'deleteContentBackward') {
-                $val = $val.substr(0, $caret) + '_' + rep + $val.substr($caret);
-                e.preventDefault();
+            if (e.inputType === 'deleteContentBackward') {
+                val = val.slice(0, caret) + '*' + val.slice(caret);
+//                console.log("Удаление. Новое значение: " + val);
             }
             else {
-                if ($val.indexOf('_') > -1) {
-                    $val = $val.substr(0, $caret) + $val.substr($caret).replace('_', '');
+                val = val.slice(0, caret) + '!' + val.slice(caret);
+            }
+            arr = val.split("");
+//            console.log('Курсор: ' + new_caret);
+            arr.forEach((el, i) => {
+                // Запрещённые символы
+                if (allows.indexOf(el) === -1 || (i > 0 && el == '+')) {
+                    arr[i] = '';
+                    new_caret = (caret >= i) ? caret - 1 : caret;
+//                    console.log('Удалён недопустимый символ: ' + el);
                 }
-            }
-            val = $val.replace(/\s/g, '').replace('+', '').replace('(', '').replace(')', '').replace(/\-/g, '');
-            val = (val.length >= 11) ? val = val.substr(0, 11) : val;
-            /* Только цифры */
-            if (allows.indexOf(key) == -1) {
-                val = val.replace(key, '');
-            }
-            ar = val.split('');
-            if (ar.join('').replace(/_/g, '').length == 0 || ar.join('').replace(/_/g, '') == '+') {
-                ar = [];
-            }
-            if (ar.length > 0) {
-                if (ar[0] != 8 && ar[0] != 7 && ar[0] != '+') {
-                    tmp = ar[0];
-                    ar[0] = '7';
-                    ar[1] = tmp;
-                    $caret = 5;
-                }
-                ar = addSybmol(ar, 1, ' ');
-                ar = addSybmol(ar, 2, '(');
-                ar = addSybmol(ar, 6, ')');
-                ar = addSybmol(ar, 7, ' ');
-                ar = addSybmol(ar, 11, '-');
-                ar = addSybmol(ar, 14, '-');
-            }
-            $new_val = (ar[0] == '7' || ar.length === 0) ? '+' + ar.join('') : ar.join('');
-            if ($new_val == '+' && key != '+') {
-                $new_val = '';
-            }
-            item.value = $new_val;
-            /*Рассчет положения каретки */
-            if (e.inputType == 'deleteContentBackward') {
-                if (ar[0] == 8) {
-                    $new_caret = ($caret == 2) ? 1 : (($caret == 7) ? 6 : (($caret == 12) ? 11 : (($caret == 15) ? 14 : $caret)));
+            });
+//            console.log('test: ' + arr);
+            if (arr[0] == '8') {
+                if (force === 0) {
+                    pattern = (arr[3] && arr[3] == '9') ? pattern3 : pattern4;
                 }
                 else {
-                    $new_caret = ($caret == 3) ? 2 : (($caret == 8) ? 7 : (($caret == 13) ? 12 : (($caret == 16) ? 15 : (($caret == 1) ? 3 : $caret))));
+                    arr.shift();
+                    arr.unshift('+', '7');
                 }
             }
             else {
-                if (ar[0] == 8) {
-                    $new_caret = ($caret == 2) ? 4 : (($caret == 7) ? 9 : (($caret == 12) ? 13 : (($caret == 15) ? 16 : $caret)));
-                }
-                else {
-                    $new_caret = ($caret == 3) ? 5 : (($caret == 8) ? '10' : (($caret == 13) ? 14 : (($caret == '16') ? 17 : $caret)));
-                }
+                pattern = (arr[4] && arr[4] == '9') ? pattern1 : pattern2;
             }
-            item.setSelectionRange($new_caret, $new_caret);
+            length = pattern.length;
+//            console.log(arr);
+//            console.log('Курсор: ' + new_caret);
+            arr.forEach((el, i) => {
+                if (k < length && el != '') {
+                    while (pattern[k] != '_') {
+                        k++;
+                        if (new_caret_moving > 0 || new_caret === (k)) {
+                            new_caret++;
+                            new_caret_moving++;
+//                            console.log('Смещение курсора+: ' + new_caret);
+                        }
+                    }
+                    if (el == '*') {
+                        if (pattern[k] == '-' || pattern[k] == ' ' || pattern[k] == ')' || pattern[k] == '(') {
+                            while (pattern[k] == '-' || pattern[k] == ' ' || pattern[k] == ')' || pattern[k] == '(') {
+                                console.log("Знак: " + pattern[k]);
+                                new_caret = k - 1;
+//                                console.log('Смещение курсора-: ' + new_caret);
+                            }
+                        }
+                        else {
+                            pattern[k] = '_';
+                            if (new_caret_moving > 0) {
+                                new_caret = k - 1;
+                            }
+                        }
+                        k++;
+                    }
+                    else {
+                        if (el == '!') {
+//                            console.log('Смещение курсора-: ' + new_caret);
+                            new_caret = k;
+                        }
+                        else {
+                            pattern[k] = el;
+                            k++;
+                        }
+                    }
+                    new_caret_moving = 0;
+                }
+            });
+//            console.log(pattern);
+            item.value = pattern.join('');
+            item.setSelectionRange(new_caret, new_caret);
         });
     });
 });
