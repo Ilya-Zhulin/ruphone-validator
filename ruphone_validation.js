@@ -21,10 +21,10 @@ document.addEventListener("DOMContentLoaded", () => {
                     arr = [],
                     k = 0,
                     length,
-                    pattern1 = ['_', '_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'],
-                    pattern2 = ['_', '_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'],
-                    pattern3 = ['_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'],
-                    pattern4 = ['_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'],
+                    pattern1 = ['_', '_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'], //+7 (901) 234-56-78
+                    pattern2 = ['_', '_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'], //+7 (0123) 34-56-78
+                    pattern3 = ['_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'], //8 (901) 234-56-78
+                    pattern4 = ['_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'], //8 (0123) 34-56-78
                     pattern = [];
 //            console.log('=============================');
 //            console.log('Курсор исходный: ' + caret);
@@ -55,10 +55,146 @@ document.addEventListener("DOMContentLoaded", () => {
                 else {
                     arr.shift();
                     arr.unshift('+', '7');
+                    pattern = pattern1;
                 }
             }
             else {
-                pattern = (arr[4] && arr[4] == '9') ? pattern1 : pattern2;
+                console.log('arr=' + arr);
+                if (arr[0] == '+') { // +XXX...
+                    if (arr[1] == '7') { // +7XXXXX....
+                        pattern = pattern1;
+                    }
+                    else { // +6XXXX...
+                        /*
+                         * Если начинается на +
+                         * и потом не 7 - убиваю + и добавляю
+                         * принудительно +7
+                         */
+                        arr.shift();
+                        arr.unshift('+', '7');
+                    }
+                    if (arr[2] == '') { // +7 XXXXXX
+                        if (arr[3] == '') { // +7 (XXXXX
+                            console.log('arr[4]=' + arr[4]);
+                            if (arr[4] == '9') { // +7 (9XXXXX
+                                pattern = pattern1;
+                            }
+                            else {// +7 (XXXXX
+                                pattern = pattern2;
+                            }
+                        }
+                        else { // +7 XXXXX
+                            if (arr[3] == '9') { // +7 9XXXXX
+                                pattern = pattern1;
+                            }
+                            else { // +7 XXXXX
+                                pattern = pattern2;
+                            }
+                        }
+                    }
+                    else { // +7XXXXXXX
+                        if (arr[2] == '') {// +7(XXXXXXX
+                            if (arr[3] == '9') { // +7(9XXXXXXX
+                                pattern = pattern1;
+                            }
+                            else {
+                                pattern = pattern2;
+                            }
+                        }
+                        else { //+7XXXXXXX
+                            if (arr[2] == '9') { //+79XXXXXXX
+                                pattern = pattern1;
+                            }
+                            else { //+7XXXXXXX
+                                pattern = pattern2;
+                            }
+                        }
+                    }
+                }
+                else {
+                    if (arr[0] == 7) {
+                        arr.unshift('+');
+                        if (arr[2] == '') { // +7 XXXXXX
+                            if (arr[3] == '(') { // +7 (XXXXX
+                                if (arr[4] == '9') { // +7 (9XXXXX
+                                    pattern = pattern1;
+                                }
+                                else {// +7 (XXXXX
+                                    pattern = pattern2;
+                                }
+                            }
+                            else { // +7 XXXXX
+                                if (arr[3] == '9') { // +7 9XXXXX
+                                    pattern = pattern1;
+                                }
+                                else { // +7 XXXXX
+                                    pattern = pattern2;
+                                }
+                            }
+                        }
+                        else { // +7XXXXXXX
+                            if (arr[2] == '(') {// +7(XXXXXXX
+                                if (arr[3] == '9') { // +7(9XXXXXXX
+                                    pattern = pattern1;
+                                }
+                                else {
+                                    pattern = pattern2;
+                                }
+                            }
+                            else { //+7XXXXXXX
+                                if (arr[2] == '9') { //+79XXXXXXX
+                                    pattern = pattern1;
+                                }
+                                else { //+7XXXXXXX
+                                    pattern = pattern2;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        console.log('arr[0]=' + arr[0]);
+                        if (arr[0] != '*') {
+
+                            arr.unshift('+', '7');
+                            if (arr[2] == '') { // +7 XXXXXX
+                                if (arr[3] == '(') { // +7 (XXXXX
+                                    if (arr[4] == '9') { // +7 (9XXXXX
+                                        pattern = pattern1;
+                                    }
+                                    else {// +7 (XXXXX
+                                        pattern = pattern2;
+                                    }
+                                }
+                                else { // +7 XXXXX
+                                    if (arr[3] == '9') { // +7 9XXXXX
+                                        pattern = pattern1;
+                                    }
+                                    else { // +7 XXXXX
+                                        pattern = pattern2;
+                                    }
+                                }
+                            }
+                            else { // +7XXXXXXX
+                                if (arr[2] == '(') {// +7(XXXXXXX
+                                    if (arr[3] == '9') { // +7(9XXXXXXX
+                                        pattern = pattern1;
+                                    }
+                                    else {
+                                        pattern = pattern2;
+                                    }
+                                }
+                                else { //+7XXXXXXX
+                                    if (arr[2] == '9') { //+79XXXXXXX
+                                        pattern = pattern1;
+                                    }
+                                    else { //+7XXXXXXX
+                                        pattern = pattern2;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             length = pattern.length;
 //            console.log(arr);
