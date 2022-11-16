@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
             else {
-                console.log('arr=' + arr);
+//                console.log('arr=' + arr);
                 if (arr[0] == '+') { // +XXX...
                     if (arr[1] == '7') { // +7XXXXX....
                         pattern = pattern1;
@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
                     }
                     else {
-                        console.log('arr[0]=' + arr[0]);
+//                        console.log('arr[0]=' + arr[0]);
                         if (arr[0] != '*') {
 
                             arr.unshift('+', '7');
@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     if (el == '*') {
                         if (pattern[k] == '-' || pattern[k] == ' ' || pattern[k] == ')' || pattern[k] == '(') {
                             while (pattern[k] == '-' || pattern[k] == ' ' || pattern[k] == ')' || pattern[k] == '(') {
-                                console.log("Знак: " + pattern[k]);
+//                                console.log("Знак: " + pattern[k]);
                                 new_caret = k - 1;
 //                                console.log('Смещение курсора-: ' + new_caret);
                             }
