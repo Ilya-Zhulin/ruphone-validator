@@ -2,7 +2,7 @@
  * File ruphone_validation.js is programmed by
  * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2023
  *
- * @version         2.3
+ * @version         2.2
  * @url				https://github.com/Ilya-Zhulin/ruphone-validator
  * @editor			Ilya A.Zhulin - https://www.zhulinia.ru
  * @copyright		Copyright (C) 2020 - 2022 Ilya A.Zhulin. All Rights Reserved.
