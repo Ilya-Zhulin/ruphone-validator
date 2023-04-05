@@ -1,8 +1,8 @@
 /**
  * File ruphone_validation.js is programmed by
- * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2022
+ * Ilya A.Zhulin <ilya.zhulin@hotmail.com> 2023
  *
- * @version         2.1
+ * @version         2.3
  * @url				https://github.com/Ilya-Zhulin/ruphone-validator
  * @editor			Ilya A.Zhulin - https://www.zhulinia.ru
  * @copyright		Copyright (C) 2020 - 2022 Ilya A.Zhulin. All Rights Reserved.
@@ -28,7 +28,27 @@ function _telValidate(field) {
                 pattern2 = ['_', '_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'], //+7 (0123) 34-56-78
                 pattern3 = ['_', ' ', '(', '_', '_', '_', ')', ' ', '_', '_', '_', '-', '_', '_', '-', '_', '_'], //8 (901) 234-56-78
                 pattern4 = ['_', ' ', '(', '_', '_', '_', '_', ')', ' ', '_', '_', '-', '_', '_', '-', '_', '_'], //8 (0123) 34-56-78
-                pattern = [];
+                pattern = [],
+                three_codes = [
+                    '495', '499', // Москва
+                    '812', // С-Петербург
+                    '496', // С. Посад
+                    '343', // Е-бург
+                    '861', // Краснодар
+                    '863', // Р. на Дону
+                    '351', // Челябинск
+                    '383', // Новосибирск
+                    '846', // Самара
+                    '342', // Пермь
+                    '843', // Казань
+                    '347', // Уфа
+                    '831', // Н. Новгород
+                    '391', // Красноярск
+                    '473', // Воронеж
+                    '423', // Владивосток
+                    '862', // Сочи
+                ],
+                geo_codes = ['3', '4', '8', '9']; // Разрешённые цифры начала геокода
         new_caret = caret;
         /* удаление и замена на подчеркивание */
         if (e.inputType === 'deleteContentBackward') {
@@ -40,14 +60,18 @@ function _telValidate(field) {
         arr = val.split("");
         arr.forEach((el, i) => {
             // Запрещённые символы
-            if (allows.indexOf(el) === -1 || (i > 0 && el == '+')) {
+            if (
+                    allows.indexOf(el) === -1 // Должны быть только цифры
+                    || (i > 0 && el == '+') // или + - не первый символ
+                    ) {
+                console.log(i);
                 arr[i] = '';
                 new_caret = (caret >= i) ? caret - 1 : caret;
             }
         });
         if (arr[0] == '8') {
             if (force === 0) {
-                pattern = (arr[3] && arr[3] == '9') ? pattern3 : pattern4;
+                pattern = (arr[3] && (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1)) ? pattern3 : pattern4;
             }
             else {
                 arr.shift();
@@ -71,7 +95,7 @@ function _telValidate(field) {
                 }
                 if (arr[2] == '') { // +7 XXXXXX
                     if (arr[3] == '') { // +7 (XXXXX
-                        if (arr[4] == '9') { // +7 (9XXXXX
+                        if (arr[4] == '9' || three_codes.indexOf(arr[4] + arr[5] + arr[6]) > -1) { // +7 (9XXXXX
                             pattern = pattern1;
                         }
                         else {// +7 (XXXXX
@@ -79,7 +103,7 @@ function _telValidate(field) {
                         }
                     }
                     else { // +7 XXXXX
-                        if (arr[3] == '9') { // +7 9XXXXX
+                        if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7 9XXXXX
                             pattern = pattern1;
                         }
                         else { // +7 XXXXX
@@ -89,7 +113,7 @@ function _telValidate(field) {
                 }
                 else { // +7XXXXXXX
                     if (arr[2] == '') {// +7(XXXXXXX
-                        if (arr[3] == '9') { // +7(9XXXXXXX
+                        if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7(9XXXXXXX
                             pattern = pattern1;
                         }
                         else {
@@ -97,7 +121,7 @@ function _telValidate(field) {
                         }
                     }
                     else { //+7XXXXXXX
-                        if (arr[2] == '9') { //+79XXXXXXX
+                        if (arr[2] == '9' || three_codes.indexOf(arr[2] + arr[3] + arr[4]) > -1) { //+79XXXXXXX
                             pattern = pattern1;
                         }
                         else { //+7XXXXXXX
@@ -111,7 +135,7 @@ function _telValidate(field) {
                     arr.unshift('+');
                     if (arr[2] == '') { // +7 XXXXXX
                         if (arr[3] == '(') { // +7 (XXXXX
-                            if (arr[4] == '9') { // +7 (9XXXXX
+                            if (arr[4] == '9' || three_codes.indexOf(arr[4] + arr[5] + arr[6]) > -1) { // +7 (9XXXXX
                                 pattern = pattern1;
                             }
                             else {// +7 (XXXXX
@@ -119,7 +143,7 @@ function _telValidate(field) {
                             }
                         }
                         else { // +7 XXXXX
-                            if (arr[3] == '9') { // +7 9XXXXX
+                            if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7 9XXXXX
                                 pattern = pattern1;
                             }
                             else { // +7 XXXXX
@@ -129,7 +153,7 @@ function _telValidate(field) {
                     }
                     else { // +7XXXXXXX
                         if (arr[2] == '(') {// +7(XXXXXXX
-                            if (arr[3] == '9') { // +7(9XXXXXXX
+                            if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7(9XXXXXXX
                                 pattern = pattern1;
                             }
                             else {
@@ -137,7 +161,7 @@ function _telValidate(field) {
                             }
                         }
                         else { //+7XXXXXXX
-                            if (arr[2] == '9') { //+79XXXXXXX
+                            if (arr[2] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { //+79XXXXXXX
                                 pattern = pattern1;
                             }
                             else { //+7XXXXXXX
@@ -148,11 +172,10 @@ function _telValidate(field) {
                 }
                 else {
                     if (arr[0] != '*') {
-
                         arr.unshift('+', '7');
                         if (arr[2] == '') { // +7 XXXXXX
                             if (arr[3] == '(') { // +7 (XXXXX
-                                if (arr[4] == '9') { // +7 (9XXXXX
+                                if (arr[4] == '9' || three_codes.indexOf(arr[4] + arr[5] + arr[6]) > -1) { // +7 (9XXXXX
                                     pattern = pattern1;
                                 }
                                 else {// +7 (XXXXX
@@ -160,7 +183,7 @@ function _telValidate(field) {
                                 }
                             }
                             else { // +7 XXXXX
-                                if (arr[3] == '9') { // +7 9XXXXX
+                                if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7 9XXXXX
                                     pattern = pattern1;
                                 }
                                 else { // +7 XXXXX
@@ -170,7 +193,7 @@ function _telValidate(field) {
                         }
                         else { // +7XXXXXXX
                             if (arr[2] == '(') {// +7(XXXXXXX
-                                if (arr[3] == '9') { // +7(9XXXXXXX
+                                if (arr[3] == '9' || three_codes.indexOf(arr[3] + arr[4] + arr[5]) > -1) { // +7(9XXXXXXX
                                     pattern = pattern1;
                                 }
                                 else {
@@ -178,7 +201,7 @@ function _telValidate(field) {
                                 }
                             }
                             else { //+7XXXXXXX
-                                if (arr[2] == '9') { //+79XXXXXXX
+                                if (arr[2] == '9' || three_codes.indexOf(arr[2] + arr[3] + arr[4]) > -1) { //+79XXXXXXX
                                     pattern = pattern1;
                                 }
                                 else { //+7XXXXXXX
@@ -190,6 +213,8 @@ function _telValidate(field) {
                 }
             }
         }
+        // Шаблон выбран
+
         length = pattern.length;
         arr.forEach((el, i) => {
             if (k < length && el != '') {
@@ -226,11 +251,25 @@ function _telValidate(field) {
                 new_caret_moving = 0;
             }
         });
+//        console.log(pattern);
+
+        // Проверка на первую цифру географического кода
+        if (pattern[0] == '8' && geo_codes.indexOf(pattern[3]) === -1) {
+            new_caret = 3;
+            pattern[3] = '_';
+        }
+        else {
+            if (pattern[0] == '+' && geo_codes.indexOf(pattern[3]) === -1) {
+                new_caret = 4;
+                pattern[4] = '_';
+            }
+        }
+
+        // Подстановка в поле
         field.value = pattern.join('');
         field.setSelectionRange(new_caret, new_caret);
     });
 }
-
 
 document.addEventListener("DOMContentLoaded", () => {
     document.querySelectorAll("input[type='tel'], input[data-type='tel']").forEach(item => {
